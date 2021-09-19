@@ -2,7 +2,9 @@ package datasources
 
 import (
 	"fmt"
+
 	"github.com/balerter/balerter/internal/config/datasources/clickhouse"
+	"github.com/balerter/balerter/internal/config/datasources/elastic"
 	"github.com/balerter/balerter/internal/config/datasources/loki"
 	"github.com/balerter/balerter/internal/config/datasources/mysql"
 	"github.com/balerter/balerter/internal/config/datasources/postgres"
@@ -22,6 +24,8 @@ type DataSources struct {
 	MySQL []mysql.Mysql `json:"mysql" yaml:"mysql" hcl:"mysql,block"`
 	// Loki for Loki data sources
 	Loki []loki.Loki `json:"loki" yaml:"loki" hcl:"loki,block"`
+	// Elastic for Elastic data sources
+	Elastic []elastic.Elastic `json:"elastic" yaml:"elastic" hcl:"elastic,block"`
 }
 
 // Validate config
@@ -80,6 +84,17 @@ func (cfg DataSources) Validate() error {
 	}
 	if name := util.CheckUnique(names); name != "" {
 		return fmt.Errorf("found duplicated name for datasource 'loki': %s", name)
+	}
+
+	names = names[:0]
+	for _, c := range cfg.Elastic {
+		names = append(names, c.Name)
+		if err := c.Validate(); err != nil {
+			return err
+		}
+	}
+	if name := util.CheckUnique(names); name != "" {
+		return fmt.Errorf("found duplicated name for datasource 'elastic': %s", name)
 	}
 
 	return nil

@@ -3,6 +3,7 @@ package manager
 import (
 	"github.com/balerter/balerter/internal/config/datasources"
 	"github.com/balerter/balerter/internal/datasource/provider/clickhouse"
+	"github.com/balerter/balerter/internal/datasource/provider/elastic"
 	"github.com/balerter/balerter/internal/datasource/provider/loki"
 	"github.com/balerter/balerter/internal/datasource/provider/mysql"
 	"github.com/balerter/balerter/internal/datasource/provider/postgres"
@@ -68,6 +69,14 @@ func (m *Manager) Init(cfg *datasources.DataSources) error {
 
 	for idx := range cfg.Loki {
 		module, err := loki.New(cfg.Loki[idx], m.logger)
+		if err != nil {
+			return err
+		}
+		m.modules[module.Name()] = module
+	}
+
+	for idx := range cfg.Elastic {
+		module, err := elastic.New(cfg.Elastic[idx], m.logger)
 		if err != nil {
 			return err
 		}
