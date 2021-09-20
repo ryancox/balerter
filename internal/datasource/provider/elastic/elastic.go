@@ -19,6 +19,8 @@ TODO:
 
 	- implement provider to load config and connect + pin
 	- implement manager / query
+		- implement 'any' / 'query string' style
+	-
 
 FUTURE
 	- enhance yaml config:
@@ -145,7 +147,7 @@ func (m *Elastic) GetLoader(_ *script.Script) lua.LGFunction {
 
 func (m *Elastic) loader(luaState *lua.LState) int {
 	var exports = map[string]lua.LGFunction{
-		//	"query": m.doQuery,
+		"query": m.query,
 	}
 
 	mod := luaState.SetFuncs(luaState.NewTable(), exports)
